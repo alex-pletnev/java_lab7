@@ -9,8 +9,8 @@ import util.User;
 import java.util.List;
 import java.util.Scanner;
 
-public class Show extends CommandAbstract {
-    private final String name = "show";
+public class PrintAscending extends CommandAbstract {
+    private final String name = "print_ascending";
     @Override
     public List<Object> checkArguments(Scanner scanner, int mode) throws ArgumentException {
         if (getArgList().size() != 0) {
@@ -26,13 +26,13 @@ public class Show extends CommandAbstract {
     public Reply execute(Manager manager, User user) {
         StringBuilder ans = new StringBuilder();
         synchronized (manager.getCollectionManager().getCollection()) {
-            manager.getCollectionManager().getCollection().forEach(city -> ans.append("City: ").append(city).append("\n"));
+            manager.getCollectionManager().getCollection().forEach(ans::append);
         }
         return new Reply(ans.toString());
     }
 
     @Override
     public String toString() {
-        return "show";
+        return "print_ascending";
     }
 }

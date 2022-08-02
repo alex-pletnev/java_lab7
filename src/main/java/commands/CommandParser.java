@@ -1,66 +1,92 @@
 package commands;
 
-import commands.com.*;
+import commands.com.ExecuteScript;
+import commands.com.History;
+import exception.ArgumentException;
+import exception.AuthorizerException;
+import exception.CommandException;
 import exception.UnknownCommandException;
+import util.CommandManager;
+import util.Manager;
+import util.Reply;
+import util.User;
 
-import java.util.*;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 public class CommandParser {
-    public static boolean reading = true;
-    public static Map<String ,CommandInterface> commandMap = new TreeMap<>();
-    static {
-        commandMap.put("help", new Help());
-        commandMap.put("info", new Info());
-        commandMap.put("show", new Show());
-        commandMap.put("add", new Add());
-        commandMap.put("update", new Update());
-        commandMap.put("remove_by_id", new Remove_by_id());
-        commandMap.put("clear", new Clear());
-        commandMap.put("save", new Save());
-        commandMap.put("execute_script", new Execute_script());
-        commandMap.put("exit", new Exit());
-        commandMap.put("add_if_max", new Add_if_max());
-        commandMap.put("remove_greater", new Remove_greater());
-        commandMap.put("history", new History());
-        commandMap.put("remove_any_by_meters_above_sea_level", new Remove_any_by_meters_above_sea_level());
-        commandMap.put("group_counting_by_meters_above_sea_level", new Group_counting_by_meters_above_sea_level());
-        commandMap.put("print_ascending", new Print_ascending());
 
-    }
 
-    public void startProcess(Scanner input) {
-        while(reading) {
+    public CommandInterface parseCommand(CommandManager manager, Scanner input, User user) {
             try {
                 String str = input.nextLine();
                 if (!str.equals("")) {
                     String[] splitStr = str.split(" ");
 
-                    if (commandMap.get(splitStr[0]) == null) {
+                    if (splitStr[0].equals("execute_script")) {
+
+                        ExecuteScript executeScript = new ExecuteScript();
+                        executeScript.setUser(user);
+                        try {
+                            executeScript.setArgList(splitStr);
+                            executeScript.checkArguments();
+                            System.out.println(executeScript.execute(user));
+                        } catch (ArgumentException | CommandException ex) {
+                            System.err.println(ex.getMessage());
+                        }
+
+                        return null;
+                    }
+
+                    if (manager.getCommandMap().get(splitStr[0]) == null) {
                         try {
                             throw new UnknownCommandException("Введена неизвестная команда!");
                         } catch (UnknownCommandException ex) {
-                            ex.printStackTrace();
-                            continue;
+                            System.err.println(ex.getMessage());
+                            return null;
                         }
                     }
-                    commandMap.get(splitStr[0]).setArgList(splitStr);
-                    commandMap.get(splitStr[0]).on(input);
-                    History.getHistoryList().add(splitStr[0]);
+
+                    if (splitStr[0].equals("exit")) {
+                        System.out.println("Сеанс завершенн");
+                        System.exit(1);
+                    }
+
+                    manager.getCommandMap().get(splitStr[0]).setArgList(splitStr);
+                    manager.getCommandMap().get(splitStr[0]).setUser(user);
+                    CommandInterface command = manager.getCommandMap().get(splitStr[0]);
+                    try {
+                        command.checkArguments(input, 0);
+                    } catch (ArgumentException ex) {
+                        System.err.println(ex.getMessage());
+                        return null;
+                    }
+
+
+
+                    return command;
+
                 } else {
                     System.err.print("Enter your command...(plz)\n");
+                    return null;
                 }
             } catch (NoSuchElementException ex) {
                 System.err.println("Обнорженно прирывание!!");
-                reading = false;
+                System.exit(1);
+                return null;
             }
+    }
+    public Reply executeCommand(Manager manager, CommandInterface command, User user) {
+        try {
+            Reply reply = command.execute(manager, user);
+            History.getHistoryList().add(command.toString());
+            return reply;
+        } catch (CommandException ex) {
+            return new Reply(ex.getMessage());
+        } catch (AuthorizerException ex) {
+            Reply reply = new Reply(ex.getMessage());
+            reply.setStatus(false);
+            return reply;
         }
-    }
-
-    public static boolean isReading() {
-        return reading;
-    }
-
-    public static void setReading(boolean reading) {
-        CommandParser.reading = reading;
     }
 }

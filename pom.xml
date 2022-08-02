@@ -5,9 +5,9 @@
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>lab5.alex</groupId>
-    <name>lab5</name>
-    <artifactId>java_lab5</artifactId>
+    <groupId>lab7.alex</groupId>
+    <name>lab7</name>
+    <artifactId>java_lab7</artifactId>
     <version>1.0</version>
 
     <dependencies>
@@ -21,6 +21,11 @@
             <artifactId>gson</artifactId>
             <version>2.9.0</version>
         </dependency>
+        <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>42.2.10</version>
+    </dependency>
     </dependencies>
 
 
@@ -30,7 +35,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
     <build>
-        <finalName>lab5</finalName>
+        <finalName>lab7</finalName>
         <defaultGoal>package</defaultGoal>
         <plugins>
             <plugin>
@@ -43,7 +48,7 @@
                     <archive>
                         <manifest>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                                <mainClass>Main</mainClass>
+                                <mainClass>ClientUDP</mainClass>
                                 <packageName>java</packageName>
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>

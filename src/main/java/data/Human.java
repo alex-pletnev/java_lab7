@@ -3,9 +3,12 @@ package data;
 
 import com.google.gson.annotations.Expose;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Human {
+public class Human implements Serializable {
+    private static final long serialVersionUID = 13L;
+
     @Expose
    private String name; //Поле не может быть null, Строка не может быть пустой
 

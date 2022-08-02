@@ -1,14 +1,13 @@
 package data;
 
 
-
-
-
 import com.google.gson.annotations.Expose;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Coordinates {
+public class Coordinates implements Serializable, Comparable<Coordinates> {
+    private static final long serialVersionUID = 11L;
     @Expose
     private float x; //Максимальное значение поля: 209
     @Expose
@@ -46,6 +45,12 @@ public class Coordinates {
     @Override
     public int hashCode() {
         return Objects.hash(x, y);
+    }
+
+    @Override
+    public int compareTo(Coordinates o) {
+        return (int) (Math.abs(getX()) + Math.abs(getY()))
+                - (int) (Math.abs(o.getX()) + Math.abs(getY()));
     }
 
     @Override

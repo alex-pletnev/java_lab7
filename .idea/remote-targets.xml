@@ -2,9 +2,9 @@
 <project version="4">
   <component name="RemoteTargetsManager">
     <targets>
-      <target name="s335156@se.ifmo.ru:2222" type="ssh/sftp">
+      <target name="s335156@se.ifmo.ru:2222" type="ssh/sftp" uuid="e1c1572b-b7fc-4a01-8082-6a3f18badd28">
         <config>
-          <option name="projectRootOnTarget" value="/home/s335156/java_lab5" />
+          <option name="projectRootOnTarget" value="/home/s335156/java_lab7" />
           <option name="serverName" value="s335156@se.ifmo.ru:2222 password" />
         </config>
         <ContributedStateBase type="JavaLanguageRuntime">

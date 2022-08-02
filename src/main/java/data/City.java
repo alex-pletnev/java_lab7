@@ -1,17 +1,16 @@
 package data;
 
 
-import collection.CollectionManager;
+import SQLutil.SQLManager;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.Objects;
 
-public class City implements Comparable<City> {
-    private static long idCounter = 0;
-
+public class City implements Comparable<City>, Serializable {
+    private static final long serialVersionUID = 10L;
     private java.time.LocalDate creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
     @Expose
     private long id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
@@ -36,21 +35,16 @@ public class City implements Comparable<City> {
     private Government government; //Поле может быть null
     @Expose
     private Human governor; //Поле может быть null
+    private String username;
+
+    public City() {
+    }
 
     public City(String name, Coordinates coordinates, double area,
                 Integer population, double metersAboveSeaLevel,
                 float timezone, boolean capital,
                 Government government, Human governor) {
-
-        if (CollectionManager.lostIdList.size() == 0) {
-            idCounter++;
-            this.id = idCounter;
-        } else {
-            Collections.sort(CollectionManager.lostIdList);
-            this.id = CollectionManager.lostIdList.get(0);
-            CollectionManager.lostIdList.remove(0);
-        }
-
+        id = SQLManager.getNextId();
         this.name = name;
         this.coordinates = coordinates;
         this.creationDate = LocalDate.now();
@@ -62,10 +56,25 @@ public class City implements Comparable<City> {
         this.government = government;
         this.governor = governor;
         this.creationDateStr = String.valueOf(creationDate);
-    }
 
-    public static long getIdCounter() {
-        return idCounter;
+    }
+    public City(long id,String name, Coordinates coordinates, double area,
+                Integer population, double metersAboveSeaLevel,
+                float timezone, boolean capital,
+                Government government, Human governor) {
+        this.id = id;
+        this.name = name;
+        this.coordinates = coordinates;
+        this.creationDate = LocalDate.now();
+        this.area = area;
+        this.population = population;
+        this.metersAboveSeaLevel = metersAboveSeaLevel;
+        this.timezone = timezone;
+        this.capital = capital;
+        this.government = government;
+        this.governor = governor;
+        this.creationDateStr = String.valueOf(creationDate);
+
     }
 
     public long getId() {
@@ -116,16 +125,20 @@ public class City implements Comparable<City> {
         return creationDateStr;
     }
 
-    public void setCreationDateStr(String creationDateStr) {
-        this.creationDateStr = creationDateStr;
+    public String getUsername() {
+        return username;
     }
 
-    public static void setIdCounter(long idCounter) {
-        City.idCounter = idCounter;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public void setCreationDateStr(String creationDateStr) {
+        this.creationDateStr = creationDateStr;
     }
 
     public void setName(String name) {
@@ -195,7 +208,7 @@ public class City implements Comparable<City> {
 
     @Override
     public int compareTo(City city) {
-            return this.getName().compareTo(city.getName());
+            return this.getCoordinates().compareTo(city.getCoordinates());
 
     }
 
@@ -225,10 +238,11 @@ public class City implements Comparable<City> {
     @Override
     public String toString() {
         return "City{" +
-                "id=" + id +
+                "creationDate=" + creationDate +
+                ", id=" + id +
                 ", name='" + name + '\'' +
                 ", coordinates=" + coordinates +
-                ", creationDate=" + creationDate +
+                ", creationDateStr='" + creationDateStr + '\'' +
                 ", area=" + area +
                 ", population=" + population +
                 ", metersAboveSeaLevel=" + metersAboveSeaLevel +

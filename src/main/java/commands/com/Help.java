@@ -1,17 +1,30 @@
 package commands.com;
 
 import commands.CommandAbstract;
+import exception.ArgumentException;
+import util.Manager;
+import util.Reply;
+import util.User;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Help extends CommandAbstract {
+    private final String name = "help";
+    @Override
+    public List<Object> checkArguments(Scanner scanner, int mode) throws ArgumentException {
+        if (getArgList().size() != 0) {
+            throw new ArgumentException("Аргумент введен неверно!");
+        }
+        return getArgList();
+    }
     @Override
     public boolean getNewEl() {
         return false;
     }
     @Override
-    public boolean on(Scanner scanner) {
-        System.out.println("help : вывести справку по доступным командам\n" +
+    public Reply execute(Manager manager, User user) {
+        return new Reply ("help : вывести справку по доступным командам\n" +
                 "info : вывести в стандартный поток вывода информацию о коллекции (тип, дата инициализации, количество элементов и т.д.)\n" +
                 "show : вывести в стандартный поток вывода все элементы коллекции в строковом представлении\n" +
                 "add {element} : добавить новый элемент в коллекцию\n" +
@@ -27,6 +40,10 @@ public class Help extends CommandAbstract {
                 "remove_any_by_meters_above_sea_level metersAboveSeaLevel : удалить из коллекции один элемент, значение поля metersAboveSeaLevel которого эквивалентно заданному\n" +
                 "group_counting_by_meters_above_sea_level : сгруппировать элементы коллекции по значению поля metersAboveSeaLevel, вывести количество элементов в каждой группе\n" +
                 "print_ascending : вывести элементы коллекции в порядке возрастания");
-        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "help";
     }
 }

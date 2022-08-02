@@ -13,15 +13,12 @@ import util.User;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.TreeSet;
 
-
-public class Add extends CommandAbstract {
-    private final String name = "add";
-
-    @Override
+public class RemoveGreater extends CommandAbstract {
+    private final String name = "remove_greater";
     public List<Object> checkArguments(Scanner scanner, int mode) throws ArgumentException {
         if (getArgList().size() != 0) {
-
             throw new ArgumentException("Аргумент введен неверно!");
         }
         City newCity = ElementInput.getNewElement(scanner, mode);
@@ -29,45 +26,36 @@ public class Add extends CommandAbstract {
             throw new ArgumentException("Ошибка в файле");
         }
         getArgList().add(newCity);
+
         return getArgList();
     }
-
     @Override
     public boolean getNewEl() {
         return true;
     }
-
     @Override
-    public Reply execute(Manager manager, User user) throws CommandException{
-        City newCity = (City) getArgList().get(0);
+    public Reply execute(Manager manager, User user) throws CommandException {
+        City testCity = (City) getArgList().get(0);
+        testCity.setUsername(user.getUsername());
         try {
-        newCity.setId(SQLManager.getNextId());
-        newCity.setUsername(user.getUsername());
-        } catch (NullPointerException ex) {
-            ex.printStackTrace();
+            SQLManager.removeGreater(user, testCity);
+        } catch (SQLException ex) {
+            throw new CommandException("Ошибка при работе с БД");
         }
         synchronized (manager.getCollectionManager().getCollection()) {
+            TreeSet<City> col = new TreeSet<>();
             for (City city : manager.getCollectionManager().getCollection()) {
-                if (newCity.compareTo(city) == 0) {
-                    throw new CommandException("Элемент не добавленн т.к. элемент эквивкелентный этому уже есть!");
+                if (!(city.compareTo(testCity) > 0 && city.getUsername().equals(user.getUsername()))) {
+                    col.add(city);
                 }
             }
+            manager.getCollectionManager().setCollection(col);
         }
-        try {
-            SQLManager.add(newCity, getUser());
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            throw new CommandException("Ошибка при каботе с БД!, элемент не добавлен");
-        }
-
-        synchronized (manager.getCollectionManager().getCollection()) {
-            manager.getCollectionManager().getCollection().add(newCity);
-        }
-        return new Reply("Элемент добавлен!");
+        return new Reply("Комманда выполненна!");
     }
 
     @Override
     public String toString() {
-        return "add";
+        return "remove_greater";
     }
 }
